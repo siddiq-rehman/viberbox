@@ -1,0 +1,62 @@
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.io.*;
+import java.math.BigInteger; 
+import java.security.SecureRandom;
+import java.math.BigInteger;
+public class SignInCheck {
+	private String dypwd;
+	 public String PwdSessionId() {
+		 SecureRandom random = new SecureRandom();
+	        return new BigInteger(130, random).toString(32);
+	    }
+//public static void main(String[] args) {
+	 HashMap<String,String> signInCheck(String UserName, String Passwword, String FriendName){
+		 HashMap<String,String> hm=new HashMap<String,String>();  
+try{  
+Class.forName("oracle.jdbc.driver.OracleDriver");  
+Connection con=DriverManager.getConnection(  "jdbc:oracle:thin:@localhost:1521:xe","system","123");  
+Connection con1=DriverManager.getConnection(  "jdbc:oracle:thin:@localhost:1521:xe","system","123");  
+      String Query="select * from Data where NAME='"+UserName +"' and PASSWORD='"+Passwword +"'";
+PreparedStatement ps=con.prepareStatement(Query);  
+ResultSet rs=ps.executeQuery();  
+/*if(rs.next()){//now on 1st row  
+String str=rs.getString(1);              
+Blob b=rs.getBlob(2);//2 means 2nd column data  
+barr=b.getBytes(1,(int)b.length());//1 means first image  
+ /*String FileLoc=  "d:\\Chat\\"+str+"sonoo.jpg";      
+FileOutputStream fout=new FileOutputStream(FileLoc);  
+fout.write(barr);  
+              
+fout.close();*/
+//return barr;
+//}//end of if  */
+if (!rs.isBeforeFirst() ) {    
+    System.out.println("No data"); 
+    hm.put("Authentication","Fail"); 
+}
+else{
+	
+	hm.put("Authentication","Success");
+	dypwd=PwdSessionId();
+	String sql = "UPDATE Data SET DYPWD ='"+ dypwd+"'WHERE NAME='"+UserName +"' and Password='"+Passwword +"'";
+	ps=con.prepareStatement(sql);   
+	int i2=ps.executeUpdate();  
+	if(i2>0){
+		hm.put("Db","Success");
+		hm.put("Password", dypwd);
+	}
+	else{
+		hm.put("Db","Success");
+	}
+	con.close();
+}
+System.out.println("ok");  
+//con.close(); 
+ 
+}catch (Exception e) {e.printStackTrace();  }
+return hm;
+	}
+}  
+ 
